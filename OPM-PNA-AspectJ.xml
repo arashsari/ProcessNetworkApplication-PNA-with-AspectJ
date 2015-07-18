@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<opmGraph xmlns="http://openprovenance.org/model/opmx#" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns4="http://example.com/">
+    <accounts>
+        <account id="account1"/>
+    </accounts>
+    <processes>
+        <process id="P_1">
+            <account ref="account1"/>
+            <label value="au.edu.adelaide.pna.processes.IntegerProducerWithToken@1eaaf438"/>
+        </process>
+        <process id="P_2">
+            <account ref="account1"/>
+            <label value="au.edu.adelaide.pna.processes.IntegerProducerWithToken@79e4620e"/>
+        </process>
+        <process id="P_3">
+            <account ref="account1"/>
+            <label value="au.edu.adelaide.pna.processes.ArithmaticProcessWithToken@b44dff0"/>
+        </process>
+        <process id="P_4">
+            <account ref="account1"/>
+            <label value="au.edu.adelaide.pna.processes.SplitterWithToken@5f99f62e"/>
+        </process>
+        <process id="P_5">
+            <account ref="account1"/>
+            <label value="au.edu.adelaide.pna.processes.ArithmaticProcessWithConstantWithToken@36ebe108"/>
+        </process>
+        <process id="P_6">
+            <account ref="account1"/>
+            <label value="au.edu.adelaide.pna.processes.ArithmaticProcessWithConstantWithToken@3802f063"/>
+        </process>
+        <process id="P_7">
+            <account ref="account1"/>
+            <label value="au.edu.adelaide.pna.processes.ArithmaticProcessWithToken@48f4104f"/>
+        </process>
+        <process id="P_8">
+            <account ref="account1"/>
+            <label value="au.edu.adelaide.pna.processes.IntegerPrinterWithToken@8db8155"/>
+        </process>
+    </processes>
+    <artifacts/>
+    <agents>
+        <agent id="Agent_1">
+            <account ref="account1"/>
+            <label value="au.edu.adelaide.pna.system.ProcessThreadImpl@19d839de"/>
+        </agent>
+        <agent id="Agent_2">
+            <account ref="account1"/>
+            <label value="au.edu.adelaide.pna.system.ProcessThreadImpl@4840b718"/>
+        </agent>
+        <agent id="Agent_3">
+            <account ref="account1"/>
+            <label value="au.edu.adelaide.pna.system.ProcessThreadImpl@10b4adb7"/>
+        </agent>
+        <agent id="Agent_4">
+            <account ref="account1"/>
+            <label value="au.edu.adelaide.pna.system.ProcessThreadImpl@45f8d1f2"/>
+        </agent>
+        <agent id="Agent_5">
+            <account ref="account1"/>
+            <label value="au.edu.adelaide.pna.system.ProcessThreadImpl@529f8ac1"/>
+        </agent>
+        <agent id="Agent_6">
+            <account ref="account1"/>
+            <label value="au.edu.adelaide.pna.system.ProcessThreadImpl@684eaf47"/>
+        </agent>
+        <agent id="Agent_7">
+            <account ref="account1"/>
+            <label value="au.edu.adelaide.pna.system.ProcessThreadImpl@5d593d1"/>
+        </agent>
+        <agent id="Agent_8">
+            <account ref="account1"/>
+            <label value="au.edu.adelaide.pna.system.ProcessThreadImpl@307f7fe"/>
+        </agent>
+    </agents>
+    <dependencies>
+        <wasControlledBy id="WCB_1">
+            <effect ref="P_1"/>
+            <role value="Dataflow- Scheduler"/>
+            <cause ref="Agent_1"/>
+            <account ref="account1"/>
+        </wasControlledBy>
+        <wasControlledBy id="WCB_2">
+            <effect ref="P_2"/>
+            <role value="Dataflow- Scheduler"/>
+            <cause ref="Agent_2"/>
+            <account ref="account1"/>
+        </wasControlledBy>
+        <wasControlledBy id="WCB_3">
+            <effect ref="P_3"/>
+            <role value="Dataflow- Scheduler"/>
+            <cause ref="Agent_3"/>
+            <account ref="account1"/>
+        </wasControlledBy>
+        <wasControlledBy id="WCB_4">
+            <effect ref="P_4"/>
+            <role value="Dataflow- Scheduler"/>
+            <cause ref="Agent_4"/>
+            <account ref="account1"/>
+        </wasControlledBy>
+        <wasControlledBy id="WCB_5">
+            <effect ref="P_5"/>
+            <role value="Dataflow- Scheduler"/>
+            <cause ref="Agent_5"/>
+            <account ref="account1"/>
+        </wasControlledBy>
+        <wasControlledBy id="WCB_6">
+            <effect ref="P_6"/>
+            <role value="Dataflow- Scheduler"/>
+            <cause ref="Agent_6"/>
+            <account ref="account1"/>
+        </wasControlledBy>
+        <wasControlledBy id="WCB_7">
+            <effect ref="P_7"/>
+            <role value="Dataflow- Scheduler"/>
+            <cause ref="Agent_7"/>
+            <account ref="account1"/>
+        </wasControlledBy>
+        <wasControlledBy id="WCB_8">
+            <effect ref="P_8"/>
+            <role value="Dataflow- Scheduler"/>
+            <cause ref="Agent_8"/>
+            <account ref="account1"/>
+        </wasControlledBy>
+    </dependencies>
+    <annotations/>
+</opmGraph>

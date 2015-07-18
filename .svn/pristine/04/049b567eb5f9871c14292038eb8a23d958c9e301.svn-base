@@ -1,0 +1,8 @@
+process.displayname=Integer Producer
+process.description=Produces integer tokens sequentially
+process.inputport.total=0
+process.outputport.total=1
+process.outputport.0.description=Integer history
+process.source.included=false
+process.editor.included=false
+process.editor.classname=

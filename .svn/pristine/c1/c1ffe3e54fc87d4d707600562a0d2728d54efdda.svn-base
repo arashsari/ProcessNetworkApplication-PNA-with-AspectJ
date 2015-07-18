@@ -1,0 +1,157 @@
+
+	package au.edu.adelaide.pna.test;
+	
+	import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+	
+	import au.edu.adelaide.kahn.pn.Builder;
+import au.edu.adelaide.kahn.pn.Factory;
+import au.edu.adelaide.kahn.pn.Network;
+import au.edu.adelaide.kahn.pn.Process;
+import au.edu.adelaide.pna.processes.ArithmaticProcessWithConstantWithToken;
+import au.edu.adelaide.pna.processes.ArithmaticProcessWithToken;
+import au.edu.adelaide.pna.processes.IntegerPrinterWithToken;
+import au.edu.adelaide.pna.processes.IntegerProducer;
+import au.edu.adelaide.pna.processes.IntegerProducerWithToken;
+import au.edu.adelaide.pna.processes.SplitterWithToken;
+import au.edu.adelaide.pna.system.factory.PNAKahnFactory;
+	
+	public class PNATest {
+		/**
+		 * @author Mehdi Sarikhani
+		 * simple network sample in Survey 
+		 * DataFlowStrategy and is a Process Network.
+		 */
+		public static void main(String[] args) {
+	
+			//Start Specification
+			SimpleDateFormat simpleDateFormat =
+					 new SimpleDateFormat("yyyy/dd/MM hh:mm:ss.SSS");
+					 String output = " ***    ////////////    "+simpleDateFormat.format(new Date());
+					 output = output +"   specificationStarted     /////////"+ " ";
+					 System.out.println( output);
+			
+			// setup the metalevel and customizations
+	
+			Factory factory = PNAKahnFactory.newInstance();
+	
+			// create a network
+			Network network = factory.newNetwork(factory);
+			Builder builder = factory.newBuilder(network);
+	
+			// create the processes
+//			Integer Generator
+	
+			IntegerProducerWithToken producer = (IntegerProducerWithToken) factory.newProcess(
+					network, new IntegerProducerWithToken());
+			HashMap producerProperties = new HashMap();
+			producerProperties.put("Initial Value", "1");
+			producerProperties.put("Upper Bound", "5");
+			producer.updateProperties(producerProperties);
+			builder.add(producer);
+			
+			IntegerProducerWithToken producer1 =  (IntegerProducerWithToken) factory.newProcess(
+					network, new IntegerProducerWithToken());
+			
+			HashMap producer1Properties = new HashMap();
+			producer1Properties.put("Initial Value", "1");
+			producer1Properties.put("Upper Bound", "5");
+			producer1.updateProperties(producer1Properties);
+			builder.add(producer1);
+			
+//			//		 Add process
+	
+			ArithmaticProcessWithToken add = (ArithmaticProcessWithToken) factory.newProcess(network, new ArithmaticProcessWithToken());
+					//factory.newProcess(network,
+//					"au.edu.adelaide.extendPagis.processes.ArithmaticProcessWithToken");
+			
+			HashMap addProperties = new HashMap();
+			addProperties.put("operator","+");
+			add.updateProperties(addProperties);
+			builder.add(add);
+			
+//			Copy one input into to output
+	
+			SplitterWithToken splitter = (SplitterWithToken) factory.newProcess(network, new SplitterWithToken());
+			
+			builder.add(splitter);
+			
+//			Multiply process
+	
+			
+			ArithmaticProcessWithConstantWithToken multiplyByConstantValue = (ArithmaticProcessWithConstantWithToken) factory.newProcess(network, new ArithmaticProcessWithConstantWithToken());
+					
+						
+			HashMap multiplyByConstantValueProperties = new HashMap();
+			multiplyByConstantValueProperties.put("operator","*");
+			multiplyByConstantValueProperties.put("defaultValue","1");
+			multiplyByConstantValueProperties.put("staticPort","0");
+			multiplyByConstantValue.updateProperties(multiplyByConstantValueProperties);
+			builder.add(multiplyByConstantValue);
+			
+//			Minus process
+	
+			
+			ArithmaticProcessWithConstantWithToken minusByConstantValue =(ArithmaticProcessWithConstantWithToken) factory.newProcess(network, new ArithmaticProcessWithConstantWithToken());
+			
+			HashMap minusByConstantValueProperties = new HashMap();
+			minusByConstantValueProperties.put("operator","-");
+			minusByConstantValueProperties.put("defaultValue","0");
+			minusByConstantValueProperties.put("staticPort","1");
+			minusByConstantValue.updateProperties(minusByConstantValueProperties);
+			builder.add(minusByConstantValue);
+			
+			
+//			 Add process
+	
+			
+			ArithmaticProcessWithToken add1 = (ArithmaticProcessWithToken) factory.newProcess(network, new ArithmaticProcessWithToken());
+			
+			HashMap add1Properties = new HashMap();
+			add1Properties.put("operator","+");
+			add1.updateProperties(add1Properties);
+			builder.add(add1);
+			
+			
+//			print network result
+	
+			IntegerPrinterWithToken consumer = (IntegerPrinterWithToken) factory.newProcess(network, new IntegerPrinterWithToken());
+			builder.add(consumer);
+	
+//			 connect the producer and consumder - this would be done via the builder
+	
+	
+			builder.connect(producer, producer.getOutputPort(0),add, add.getInputPort(0));
+			builder.connect(producer1, producer1.getOutputPort(0), add, add.getInputPort(1));
+			builder.connect(add, add.getOutputPort(0), splitter, splitter.getInputPort(0));
+			builder.connect(splitter, splitter.getOutputPort(0), multiplyByConstantValue, multiplyByConstantValue.getInputPort(1));
+			builder.connect(splitter, splitter.getOutputPort(1), minusByConstantValue, minusByConstantValue.getInputPort(0));
+			builder.connect(multiplyByConstantValue, multiplyByConstantValue.getOutputPort(0), add1, add1.getInputPort(0));
+			builder.connect(minusByConstantValue, minusByConstantValue.getOutputPort(0), add1, add1.getInputPort(1));
+			builder.connect(add1, add1.getOutputPort(0), consumer, consumer.getInputPort(0));
+			
+	//---------------------------------
+			//Stop Specification
+					 System.out.println( " ***    ////////////    "+simpleDateFormat.format(new Date())+"   specificationStoped    /////////"+ " ");
+			//Start Execution
+					 System.out.println( " ***    ////////////    "+simpleDateFormat.format(new Date())+"   ExecutionStarted    /////////"+ " ");	
+					
+			// start computation
+			builder.trigger();
+	try
+	{
+		Thread.sleep(5000);
+		System.out.println("Exiting");
+		PNAMOPTest.exceutionStop();
+		System.exit(0);
+		
+	}
+	catch (Exception e) {}
+	}
+	public static void exceutionStop()
+	{
+	System.out.println("++++++++++++++ in stop executionStop");
+	}
+	
+	}

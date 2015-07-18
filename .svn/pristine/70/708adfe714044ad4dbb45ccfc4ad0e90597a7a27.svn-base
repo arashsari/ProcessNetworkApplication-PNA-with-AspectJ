@@ -1,0 +1,122 @@
+package au.edu.adelaide.aspectj;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Map;
+
+
+/**
+ * the list of needed aspect and pointcuts
+ * 
+ * @author mehdi sarikhani
+ *
+ */
+abstract aspect AbstractProvenanceModel {
+
+	// /////////////////////////////////////////////////////////////////
+	// Specification
+
+	/** Called before registering workflow contents. */
+	pointcut specificationStart():  execution (*
+			au.edu.adelaide.extendPagis.test.Test1.main(..));
+
+	/** Called when finished registering workflow contents. */
+	pointcut specificationStop():execution (* au.edu.adelaide.pagis.system.PagisBuilder.trigger());
+
+	// /** Register an actor. */
+	pointcut regActor(): 
+		execution (* au.edu.adelaide.kahn.pn.Factory.newProcess(..)) && target(au.edu.adelaide.extendPagis.system.MyPagisKahnFactory) ;
+
+	/** Register a Inputport or portparameter. */
+	pointcut regInputPort(): execution (*
+			au.edu.adelaide.kahn.pn.Factory.newInputPort(..)) && target(au.edu.adelaide.extendPagis.system.MyPagisKahnFactory) ;
+
+	/** Register a Outputport or portparameter. */
+	pointcut regOutputPort(): execution (*
+			au.edu.adelaide.kahn.pn.Factory.newOutputPort(..)) && target(au.edu.adelaide.extendPagis.system.MyPagisKahnFactory) ;
+
+	// Register a parameter. A parameter can be anything
+
+	pointcut regParameter(Map m): execution (*
+			au.edu.adelaide.kahn.pn.AbstractProcess.updateProperties(..)) && args(m)&&target(au.edu.adelaide.kahn.pn.AbstractProcess);// &&
+	// withincode(au.edu.adelaide.extendPagis.test.Test1.main(..));
+
+	/**
+	 * Register a link between two port It is also called channel.
+	 */
+	pointcut regLink(): execution (*
+			au.edu.adelaide.pagis.system.PagisBuilder.connect(..)) 
+			&& target(au.edu.adelaide.pagis.system.PagisBuilder) ;
+
+	/**
+	 * Register a relation.
+	 * 
+	 * It is captured in runtime ot just capture" WastriggeredBy" relationShip.
+	 */
+	pointcut regRelation(): execution (*
+			au.edu.adelaide.kahn.pn.AbstractProcess.getOutputPort(..));
+
+	// /////////////////////////////////////////////////////////////////
+	// Execution of workflow
+
+	/** Record the starting of workflow execution. */
+	pointcut executionStart(): execution (* au.edu.adelaide.pagis.system.PagisBuilder.trigger());
+
+	/** Record the stopping of workflow execution. */
+	pointcut executionStop(): execution (*
+			au.edu.adelaide.extendPagis.test.Test1.main(..));
+
+	// It is hard to implement yet, Need further information, Implement it
+	// later.
+
+	/** Record an actor firing. 
+	 * it is not collected for  medium and coarse-grained level of provenance. 
+	 * */
+	pointcut actorFire():execution (* au.edu.adelaide.kahn.pn.Process.fire(..))
+	&& target(au.edu.adelaide.kahn.pn.AbstractProcess);
+
+	 /** Record an actor firing. 
+     *  it is not collected for fine-grained level of provenance. 
+     * */
+	pointcut actorFireWithInfo():execution (* au.edu.adelaide.kahn.pn.Process.fire(..))
+    && target(au.edu.adelaide.kahn.pn.AbstractProcess);
+	
+	/** Record a Outpuport event. */
+	pointcut OutputPortEvent(Object token): execution (* au.edu.adelaide.kahn.pn.OutputPort.put(Object)) && args(token) && target(au.edu.adelaide.pagis.halfchannel.HalfChannelOutputPortImpl);
+
+	/** Record a InputPort event. */
+	pointcut InputPortEvent(): execution (* au.edu.adelaide.kahn.pn.InputPort.get(..)) && target(au.edu.adelaide.pagis.halfchannel.HalfChannelInputPortImpl);
+
+	// //////////////////////////////////////////////////////////////////////
+	// // relationship methods ////
+
+	/** Record WasGeneratedBy relationship. */
+
+	pointcut WasGeneratedBy(): execution (*
+			au.edu.adelaide.kahn.pn.AbstractProcess.getOutputPort(..));
+	
+
+	/** Record Used relationship. */
+	pointcut Used():execution (* au.edu.adelaide.kahn.pn.Process.fire(..))
+	&& target(au.edu.adelaide.kahn.pn.AbstractProcess);
+	
+	pointcut wasDeriviedFrom():execution (*
+			 au.edu.adelaide.kahn.pn.Process.fire(..))
+			 && target(au.edu.adelaide.kahn.pn.AbstractProcess);
+	
+	/*
+	 * OPM wasTriggerBy relationship
+	 */
+
+	pointcut wasTriggerBy():execution (* au.edu.adelaide.kahn.pn.Process.fire(..))
+&& target(au.edu.adelaide.kahn.pn.AbstractProcess);
+
+	/*
+	 * // * OPM wasControlledBy relationship // *
+	 * 
+	 */
+
+	pointcut wasControlledBy():
+			execution (au.edu.adelaide.pagis.system.ProcessThreadImpl.new(..)) ;
+
+}

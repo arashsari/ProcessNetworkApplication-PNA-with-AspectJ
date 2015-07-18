@@ -1,0 +1,180 @@
+package au.edu.adelaide.pna.system;
+
+import au.edu.adelaide.pna.halfchannel.ChannelController;
+import au.edu.adelaide.kahn.pn.Process;
+import au.edu.adelaide.kahn.pn.Channel;
+import au.edu.adelaide.kahn.pn.Network;
+import au.edu.adelaide.kahn.pn.NetworkChangeEvent;
+import au.edu.adelaide.kahn.pn.NetworkChangeListener;
+import au.edu.adelaide.kahn.pn.Builder;
+import au.edu.adelaide.kahn.pn.Framework;
+import au.edu.adelaide.kahn.pn.Factory;
+
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Collections;
+import java.io.Serializable;
+import java.lang.reflect.Method;
+
+public class PNANetwork implements Network, Serializable {
+//	private Set processes = new HashSet();
+	private LinkedList<Process> processes = new LinkedList<Process>();
+	private Set channels = new HashSet();
+	private Set listeners = new HashSet();
+	private Factory factory;
+
+	public PNANetwork(Factory factory) {
+		this.factory = factory;
+	}
+
+	/**
+	 * Add a listener to change in this model.
+	 */
+	public void addNetworkChangeListener(NetworkChangeListener l) {
+		listeners.add(l);
+	}
+
+	/**
+	 * Remove a listener of change in this model.
+	 */
+	public void removeNetworkChangeListener(NetworkChangeListener l) {
+		listeners.remove(l);
+	}
+
+	public Factory getFactory() {
+		return factory;
+	}
+
+	public void add(Builder builder) {
+		if (builder instanceof Framework) {
+			Framework f = (Framework) builder;
+			if (!f.contains(f.getExistingProcess()))
+				remove(f.getExistingProcess());
+
+			Iterator removedChannels = f.getRemovedChannels().iterator();
+			while (removedChannels.hasNext())
+				remove((Channel) removedChannels.next());
+		}
+
+		Iterator p = builder.getProcesses().iterator();
+		while (p.hasNext()) {
+			add((Process) p.next());
+		}
+
+		Iterator c = builder.getChannels().iterator();
+		while (c.hasNext())
+			add((Channel) c.next());
+	}
+
+	public void add(Process process) {
+
+		// don't add and start a process that's already executing
+		if (!processes.contains(process)) {
+			processes.add(process);
+
+			try {
+
+	
+				DataFlowStrategy strategy = new DataFlowStrategy();
+				ProcessThreadImpl thread = new ProcessThreadImpl(
+						process, strategy);
+				thread.trigger();	
+
+			} catch (Exception e) {
+				System.err
+						.println("ERROR: error invoking trigger on scheduler");
+			}
+
+			// notify the listeners
+			Iterator i = listeners.iterator();
+			while (i.hasNext()) {
+				System.out.println("AddProcess in my builder" +process.toString());
+				((NetworkChangeListener) i.next())
+						.processAdded(new NetworkChangeEvent(this, process));
+			}
+		}
+	}
+
+	public void remove(Process process) {
+		// don't remove a process that doesn't exist
+		if (processes.contains(process)) {
+			processes.remove(process);
+
+			// stop the process
+			try {
+				Method threadMethod = ProcessThread.class.getMethod("stop",
+						new Class[] {});
+
+			} catch (Exception e) {
+				System.err.println("ERROR: error invoking stop on scheduler");
+			}
+
+			// notify the listeners
+			Iterator i = listeners.iterator();
+			while (i.hasNext())
+				((NetworkChangeListener) i.next())
+						.processRemoved(new NetworkChangeEvent(this, process));
+		}
+	}
+
+	public boolean contains(Process process) {
+		return processes.contains(process);
+	}
+
+	public int getProcessCount() {
+		return processes.size();
+	}
+
+
+	public LinkedList<Process> getProcesses() {
+
+		return  processes;
+	}
+
+	public void add(Channel channel) {
+		channels.add(channel);
+
+		System.out
+				.println("TBD: Channel Controller start should be done by the Process Thread");
+		// start the internal channel thread
+		ChannelController controller = (ChannelController) channel;
+		controller.startTransfer();
+
+		// notify the listeners
+		Iterator i = listeners.iterator();
+		while (i.hasNext()) {
+			NetworkChangeListener listener = (NetworkChangeListener) i.next();
+			listener.channelAdded(new NetworkChangeEvent(this, channel));
+		}
+	}
+
+	public void remove(Channel channel) {
+		channels.remove(channel);
+
+		// stop the internal channel thread
+		ChannelController controller = (ChannelController) channel;
+		controller.stopTransfer();
+
+		// notify the listeners
+		Iterator i = listeners.iterator();
+		while (i.hasNext())
+			((NetworkChangeListener) i.next())
+					.channelRemoved(new NetworkChangeEvent(this, channel));
+	}
+
+	public boolean contains(Channel channel) {
+		return channels.contains(channel);
+	}
+
+	public int getChannelCount() {
+		return channels.size();
+	}
+
+	public Set getChannels() {
+		return Collections.unmodifiableSet(channels);
+	}
+}

@@ -1,0 +1,9 @@
+process.displayname=Identity
+process.description=Copies one input history to an output history
+process.inputport.total=1
+process.inputport.0.description=Object history
+process.outputport.total=1
+process.outputport.0.description=Object history
+process.source.included=false
+process.editor.included=false
+process.editor.classname=

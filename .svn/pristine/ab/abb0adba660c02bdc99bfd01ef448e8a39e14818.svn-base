@@ -1,0 +1,10 @@
+process.displayname=ArithmaticProcessWithConstant
+process.description=Calculate integer an input and default value based on given operator and then send to an output 
+process.inputport.total=1
+process.inputport.0.description=Object history
+process.outputport.total=1
+process.outputport.0.description=Object history
+process.outputport.1.description=Object history
+process.source.included=false
+process.editor.included=false
+process.editor.classname=
